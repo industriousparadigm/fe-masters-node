@@ -16,18 +16,25 @@ function doOnRequest(request, response) {
     const greeting = 'Somebody said hi.\n'
     console.log('greeting appended to file')
     fs.appendFileSync('hi_log.txt', greeting)
+    console.log('hi back to you!')
   } else if (request.method === 'POST' && request.url === '/greeting') {
     // accumulate the request body in a series of chunks
     // code here...
-    console.log({ request })
-    // switch (request.body) {
-    //   case 'hello':
-    //     return console.log('hello there!')
-    //   case "what's up":
-    //     return console.log('the sky!')
-    //   default:
-    //     return console.log('good morning.')
-    // }
+    const chunks = []
+    request.on('data', (chunk) => chunks.push(chunk))
+    request.on('end', () => {
+      const bufferedBody = Buffer.concat(chunks)
+      const body = bufferedBody.toString()
+      switch (body) {
+        case 'hello':
+          return console.log('hello there!')
+        case "what's up":
+          return console.log('the sky!')
+        default:
+          return console.log('good morning.')
+      }
+
+    })
   } else {
     // Handle 404 error: page not found
     // code here...
