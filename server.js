@@ -23,8 +23,9 @@ function doOnRequest(request, response) {
     const chunks = []
     request.on('data', (chunk) => chunks.push(chunk))
     request.on('end', () => {
-      const bufferedBody = Buffer.concat(chunks)
-      const body = bufferedBody.toString()
+      const buffer = Buffer.concat(chunks)
+      const body = buffer.toString()
+      fs.appendFileSync('hi_log.txt', body + '\n')
       switch (body) {
         case 'hello':
           return console.log('hello there!')
@@ -33,11 +34,13 @@ function doOnRequest(request, response) {
         default:
           return console.log('good morning.')
       }
-
     })
   } else {
     // Handle 404 error: page not found
     // code here...
+    response.statusCode(404)
+    response.write("Error: Not found");
+    response.end()
   }
 }
 
